@@ -3,7 +3,11 @@
     "step": {
       "user": {
         "data": {"base_url": "App base URL"},
-        "description": "URL where the Agent Gosling App API is reachable from Home Assistant."
+        "description": "URL where the Agent Gosling add-on API is reachable from Home Assistant.\n\nIf the field is pre-filled, the URL was auto-discovered from your installed add-on — you can confirm or adjust it.\n\nTo find the URL manually: go to **Settings → Add-ons → Agent Gosling → Info**, copy the add-on slug, replace every underscore with a hyphen, and use port 8099. For example, a slug `c4bceb4f_agent_gosling` becomes `http://c4bceb4f-agent-gosling:8099`."
+      },
+      "reconfigure": {
+        "data": {"base_url": "App base URL"},
+        "description": "Update the URL where the Agent Gosling add-on API is reachable. The current value is pre-filled — adjust if the add-on slug has changed."
       }
     }
   }
