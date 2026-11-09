@@ -45,7 +45,9 @@ class LocalAgentConversationEntity(conversation.ConversationEntity):
         conversation_id = user_input.conversation_id or ulid.ulid_now()
         response = intent.IntentResponse(language=user_input.language)
         try:
-            reply = await self._client.chat(user_input.text, conversation_id)
+            reply = await self._client.chat(
+                user_input.text, conversation_id, _request_context(user_input)
+            )
             response.async_set_speech(reply)
         except AgentApiError as err:
             response.async_set_error(
@@ -55,3 +57,14 @@ class LocalAgentConversationEntity(conversation.ConversationEntity):
         return conversation.ConversationResult(
             response=response, conversation_id=conversation_id
         )
+
+
+def _request_context(user_input: conversation.ConversationInput) -> dict:
+    """The raw ids the App needs to tell where and who a request is from.
+    Read defensively: ``ConversationInput`` has changed across HA releases."""
+    context = getattr(user_input, "context", None)
+    return {
+        "device_id": getattr(user_input, "device_id", None),
+        "satellite_id": getattr(user_input, "satellite_id", None),
+        "user_id": getattr(context, "user_id", None),
+    }
