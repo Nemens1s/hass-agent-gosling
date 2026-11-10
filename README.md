@@ -8,7 +8,7 @@ Home Assistant custom integration that connects the [Agent Gosling add-on](https
 
 1. HACS → Custom repositories → add `https://github.com/Nemens1s/hass-agent-gosling` → category: Integration → Install, then restart HA.
 2. Settings → Devices & Services → Add Integration → **Agent Gosling**.
-3. Set the App base URL (default `http://agent-gosling:8099` — the add-on's internal address on the same host).
+3. Set the App base URL — the integration will attempt to auto-discover it from your installed add-on. If it can't, find your add-on slug under **Settings → Add-ons → Agent Gosling → Info**, replace underscores with hyphens, and append `:8099` (e.g. `http://c4bceb4f-agent-gosling:8099`).
 4. Settings → Voice assistants → select **Agent Gosling** as the conversation agent.
 
 ### Manual
@@ -27,7 +27,7 @@ The Agent Gosling add-on must be running and reachable from HA at the configured
 
 | Field | Default | Description |
 |---|---|---|
-| `base_url` | `http://agent-gosling:8099` | URL of the Agent Gosling add-on API |
+| `base_url` | auto-discovered or entered manually | URL of the Agent Gosling add-on API |
 
 ## Development
 

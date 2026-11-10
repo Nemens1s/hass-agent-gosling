@@ -51,14 +51,16 @@ class _StubClient:
 
     def __init__(self):
         self.calls = []
+        self.contexts = []
 
-    async def chat(self, text, conversation_id):
+    async def chat(self, text, conversation_id, context=None):
         self.calls.append((text, conversation_id))
+        self.contexts.append(context)
         return f"echo:{text}:{conversation_id}"
 
 
 class _BoomClient:
-    async def chat(self, text, conversation_id):
+    async def chat(self, text, conversation_id, context=None):
         raise AgentApiError("connection refused")
 
 
@@ -122,3 +124,23 @@ async def test_async_process_maps_client_error_to_intent_error():
     assert "not reachable" in result.response.speech["plain"]["speech"]
     # A conversation_id is still returned so the caller can retry the thread.
     assert result.conversation_id
+
+
+async def test_forwards_device_satellite_and_user():
+    client = _StubClient()
+    entity = LocalAgentConversationEntity(_FakeEntry(), client)
+    user_input = conversation.ConversationInput(
+        text="dim the lights",
+        context=Context(user_id="u1"),
+        conversation_id=None,
+        device_id="d1",
+        satellite_id="assist_satellite.living_room",
+        language="en",
+        agent_id="conversation.agent_gosling",
+    )
+
+    await entity.async_process(user_input)
+
+    assert client.contexts == [
+        {"device_id": "d1", "satellite_id": "assist_satellite.living_room", "user_id": "u1"}
+    ]
